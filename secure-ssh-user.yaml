@@ -1,0 +1,32 @@
+---
+- name: Create a new admin user, set up SSH key for them, and secure SSH
+  hosts: localhost
+  become: yes
+  vars:
+    # default values
+    admin_username: "tandica_admin"
+    admin_groups: "wheel,it"
+  tasks:
+    - name: Add a new user
+      user:
+        name: "{{ admin_username }}"
+        shell: /bin/bash
+        groups: "{{ admin_groups }}"
+        append: yes
+
+    - name: Set up SSH key authentication
+      authorized_key:
+        user: "{{ admin_username }}"
+        state: present
+        key: "{{ lookup('file', '/home/tandi/.ssh/id_rsa.pub') }}"
+
+    - name: Disable root login and password authentication
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PermitRootLogin'
+        line: 'PermitRootLogin no'
+        
+    - name: Ensure SSH daemon reloads
+      systemd:
+        name: sshd
+        state: restarted

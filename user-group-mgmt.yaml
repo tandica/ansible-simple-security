@@ -1,0 +1,20 @@
+---
+- hosts: localhost 
+  become: yes 
+  tasks: 
+    - name: Create developer group 
+      group: 
+        name: developers 
+        state: present 
+        
+    - name: Add users to developer group 
+      user: 
+        name: "{{ item.name }}" 
+        groups: developers 
+        append: yes 
+        create_home: yes 
+        shell: /bin/bash 
+      loop: 
+        - { name: 'ella' } 
+        - { name: 'banni' } 
+        - { name: 'sadi' } 
