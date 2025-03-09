@@ -1,0 +1,21 @@
+---
+- hosts: localhost 
+  become: yes 
+  vars:
+    ops_users: []
+  tasks: 
+    - name: Create ops group 
+      group: 
+        name: ops 
+        state: present 
+        
+    - name: Add users to ops group 
+      user: 
+        name: "{{ username }}" 
+        groups: ops 
+        append: yes 
+        create_home: yes 
+        shell: /bin/bash 
+      loop: "{{ ops_users }}"
+      loop_control:
+        loop_var: username

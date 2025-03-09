@@ -1,11 +1,12 @@
 ---
-- name: Create a new admin user, set up SSH key for them, and secure SSH
+- name: SSH hardening and Admin User Setup
   hosts: localhost
   become: yes
   vars:
     # default values
     admin_username: "tandica_admin"
     admin_groups: "wheel,it"
+    ssh_key_path: "/home/tandi/.ssh/id_rsa.pub"
   tasks:
     - name: Add a new user
       user:
@@ -18,7 +19,7 @@
       authorized_key:
         user: "{{ admin_username }}"
         state: present
-        key: "{{ lookup('file', '/home/tandi/.ssh/id_rsa.pub') }}"
+        key: "{{ lookup('file', ssh_key_path) }}"
 
     - name: Disable root login and password authentication
       lineinfile:
